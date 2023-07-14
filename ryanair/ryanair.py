@@ -13,6 +13,8 @@ import backoff
 import requests
 from deprecated import deprecated
 
+from free_proxy import get_first_operational_proxy
+
 from ryanair.types import Flight, Trip
 
 logger = logging.getLogger("ryanair")
@@ -27,6 +29,7 @@ if not logger.handlers:
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
+proxy = None
 
 class RyanairException(Exception):
     def __init__(self, message):
@@ -249,9 +252,21 @@ class Ryanair:
     def _on_query_error(e):
         logger.exception(f"Gave up retrying query, last exception was {e}")
 
+    # CUSTOM BACKOFF HANDLER ======================
+    def on_backoff_handler(details):
+        try:
+            global proxy
+            proxy = get_first_operational_proxy()
+        except ValueError as e:
+            logger.exception(f"Failed to get proxy: {e}, Setting proxy to `None`")
+            proxy = None
+
+    # ============================================
+
     @backoff.on_exception(
         backoff.expo,
         Exception,
+        on_backoff=on_backoff_handler,
         max_tries=5,
         logger=logger,
         on_giveup=_on_query_error,
@@ -259,8 +274,12 @@ class Ryanair:
     )
     def _retryable_query(self, url, params):
         self._num_queries += 1
-
-        return self.session.get(url, params=params).json()
+        if proxy:
+            logger.info(f"Using proxy {proxy}")
+            return self.session.get(url, params=params, proxies=proxy).json()
+        else:
+            logger.info("Not using proxy")
+            return self.session.get(url, params=params).json()
 
     def _update_session_cookie(self):
         # Visit main website to get session cookies
