@@ -274,6 +274,12 @@ class Ryanair:
     )
     def _retryable_query(self, url, params):
         self._num_queries += 1
+
+        # for testing purposes
+        # import random
+        # if random.randint() % 2 == 0:
+        #     raise Exception("random error")
+
         if proxy:
             logger.info(f"Using proxy {proxy}")
             return self.session.get(url, params=params, proxies=proxy).json()

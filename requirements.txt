@@ -1,4 +1,4 @@
 requests
 Deprecated
 backoff
-free_proxy
+free-proxy @ git+https://github.com/ajanderson1/free-proxy.git ; python_version >= "3.8" and python_version < "4.0"

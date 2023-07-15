@@ -6,6 +6,9 @@
 
 ### Removed
 
+# [v2.3.2] - 2023.07.15
+### Added
+- custom backoff handler which utilised ajanderson1/free-proxy to fetch a new proxy if api call fails
 
 # [v2.3.1] - 2023.05.03
 ### Added
