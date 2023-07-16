@@ -17,7 +17,8 @@ from free_proxy import get_first_operational_proxy
 
 from ryanair.types import Flight, Trip
 
-logger = logging.getLogger("ryanair")
+logger = logging.getLogger(__name__)
+
 if not logger.handlers:
     logger.setLevel(logging.INFO)
 
@@ -281,10 +282,10 @@ class Ryanair:
         #     raise Exception("random error")
 
         if proxy:
-            logger.info(f"Using proxy {proxy}")
+            logger.warning(f"PROXY: {proxy}")
             return self.session.get(url, params=params, proxies=proxy).json()
         else:
-            logger.info("Not using proxy")
+            # logger.debug("Not using proxy")
             return self.session.get(url, params=params).json()
 
     def _update_session_cookie(self):
