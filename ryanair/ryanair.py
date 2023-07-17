@@ -282,7 +282,7 @@ class Ryanair:
         #     raise Exception("random error")
 
         if proxy:
-            logger.warning(f"PROXY: {proxy}")
+            logger.warning(f"Ryanair API using proxy: {proxy}")
             return self.session.get(url, params=params, proxies=proxy).json()
         else:
             # logger.debug("Not using proxy")
