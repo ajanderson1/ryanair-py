@@ -257,6 +257,7 @@ class Ryanair:
     def on_backoff_handler(details):
         try:
             global proxy
+            logger.info(f"Requesting a proxy (using free-proxy library)")
             proxy = get_first_operational_proxy()
         except ValueError as e:
             logger.exception(f"Failed to get proxy: {e}, Setting proxy to `None`")
