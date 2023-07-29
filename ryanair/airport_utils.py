@@ -6,7 +6,7 @@ import csv
 
 from ryanair.types import Flight
 
-Airport = namedtuple("Airport", ("IATA_code", "lat", "lng", "location"))
+Airport = namedtuple("Airport", ("IATA_code", "name", "lat", "lng", "location", "municipality", "iso_region", "iso_country"))
 
 AIRPORTS = {}
 with open(
@@ -15,13 +15,28 @@ with open(
     reader = csv.DictReader(csvfile)
     for row in reader:
         iata_code = row["iata_code"]
+        name = row["name"]
         location = ",".join((row["iso_region"], row["iso_country"]))
+        municipality = row["municipality"]
         lat = float(row["latitude_deg"])
         lng = float(row["longitude_deg"])
+        iso_region = row["iso_region"]
+        iso_country = row["iso_country"]
 
         AIRPORTS[iata_code] = Airport(
-            IATA_code=iata_code, lat=lat, lng=lng, location=location
+            IATA_code=iata_code, name=name, lat=lat, lng=lng, location=location, municipality=municipality, iso_region=iso_region, iso_country=iso_country
         )
+
+def get_airport_by_iata(iata_code):
+    return f"{AIRPORTS[iata_code].name}, {AIRPORTS[iata_code].municipality}"
+
+
+def validate_airport(iata_code)->bool:
+    """
+    Check if the airport is valid, ie. a valid IATA code
+    """
+    return iata_code in AIRPORTS
+
 
 
 def _haversine(lat1, lon1, lat2, lon2):
